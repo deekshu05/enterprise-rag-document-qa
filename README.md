@@ -92,7 +92,7 @@ Pipeline:
 ### Installation
 
 ```bash
-git clone https://github.com/<your-username>/enterprise-rag-document-qa.git
+git clone https://github.com/deekshu05/enterprise-rag-document-qa.git
 cd enterprise-rag-document-qa
 pip install -r requirements.txt
 ```
@@ -128,6 +128,29 @@ curl -X POST localhost:8000/query -H "Content-Type: application/json" -d '{"ques
 docker build -t enterprise-rag .
 docker run -p 8000:8000 enterprise-rag
 ```
+
+## Sample run
+
+Real output from ingesting a 4-policy sample document set and asking two different questions, using the dependency-free hashing embedder and the mock LLM client (no API keys required):
+
+```bash
+$ CHUNK_SIZE=180 CHUNK_OVERLAP=20 python demo.py
+
+Indexed 5 chunks from sample_docs/
+
+Q: How many vacation days do employees get after 3 years?
+Retrieved chunk: "Vacation Policy: Full-time employees accrue 15 vacation days
+per year, increasing to 20 days after 3 years of tenure and 25 days..."
+A: Mock answer grounded in the retrieved context.
+
+Q: How long do I have to submit an expense receipt?
+Retrieved chunk: "Expense Reimbursement Policy: Submit receipts within 30 days
+for reimbursement. Manager approval is required for any single expense
+over $500. Reimbursements are proce..."
+A: Mock answer grounded in the retrieved context.
+```
+
+Out of five chunks spanning four unrelated policies (remote work, expenses, vacation, parental leave), each question correctly retrieves the one chunk that actually answers it — confirming the embedding/retrieval path works correctly. The mock LLM's answer text is intentionally generic (see `MockLLMClient` in `rag_pipeline.py`); swapping in `AnthropicLLMClient` generates a real grounded answer from the same retrieved context.
 
 ## Impact
 
